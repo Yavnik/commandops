@@ -1,0 +1,1204 @@
+@import 'tailwindcss';
+
+/* Define theme variables using @theme directive */
+@theme {
+  /* Default theme (cyan/slate theme) */
+  --color-primary: var(--color-slate-900);
+  --color-secondary: --alpha(var(--color-slate-900) / 80%);
+  --color-accent: var(--color-slate-600);
+  --color-primary-text: var(--color-cyan-100);
+  --color-secondary-text: var(--color-cyan-600);
+  --color-accent-text: var(--color-cyan-500);
+  --color-border: --alpha(var(--color-cyan-500) / 50%);
+  --color-glow: var(--color-cyan-500);
+  --color-success: var(--color-green-400);
+  --color-warning: var(--color-orange-400);
+  --color-danger: var(--color-red-400);
+  --color-grid: --alpha(var(--color-cyan-500) / 5%);
+  --color-scrollbar-track: var(--color-slate-900);
+  --color-scrollbar-thumb: var(--color-cyan-800);
+  --color-scrollbar-thumb-hover: var(--color-cyan-700);
+  --color-header-bg: --alpha(var(--color-slate-900) / 80%);
+  --color-header-border: --alpha(var(--color-cyan-900) / 50%);
+  --color-logo-bg: var(--color-cyan-500);
+  --color-logo-text: var(--color-slate-900);
+  --color-tertiary: --alpha(var(--color-slate-900) / 50%);
+
+  /* Border radius variables - theme specific */
+  --border-radius-sm: 0.125rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+  --border-radius-full: 9999px;
+
+  /* Status colors */
+  --color-status-planning: var(--color-cyan-600);
+  --color-status-active: var(--color-cyan-400);
+  --color-status-complete: var(--color-green-400);
+  --color-status-completed: var(--color-green-400);
+  --color-status-failed: var(--color-red-400);
+  --color-status-aborted: var(--color-slate-400);
+
+  /* UI component colors */
+  --color-sidebar-border: --alpha(var(--color-cyan-900) / 50%);
+  --color-avatar-bg: --alpha(var(--color-cyan-500) / 20%);
+  --color-avatar-border: --alpha(var(--color-cyan-500) / 50%);
+  --color-selected-tab-bg: --alpha(var(--color-cyan-500) / 20%);
+  --color-selected-tab-border: --alpha(var(--color-cyan-500) / 50%);
+  --color-icon-bg-cyan: --alpha(var(--color-cyan-500) / 20%);
+  --color-icon-bg-green: --alpha(var(--color-green-500) / 20%);
+  --color-icon-bg-red: --alpha(var(--color-red-500) / 20%);
+  --color-icon-border-cyan: --alpha(var(--color-cyan-500) / 50%);
+  --color-icon-border-green: --alpha(var(--color-green-500) / 50%);
+  --color-icon-border-red: --alpha(var(--color-red-500) / 50%);
+  --color-command-ops-text: var(--color-cyan-400);
+  --color-tabs-bg: --alpha(var(--color-slate-900) / 50%);
+  --color-tabs-border: --alpha(var(--color-cyan-900) / 50%);
+  --color-active-tab-bg: --alpha(var(--color-cyan-500) / 20%);
+  --color-active-tab-text: var(--color-cyan-400);
+  --color-button-default-bg: --alpha(var(--color-cyan-500) / 20%);
+  --color-button-default-text: var(--color-cyan-400);
+  --color-button-default-border: --alpha(var(--color-cyan-500) / 50%);
+
+  /* Priority colors */
+  --color-priority-critical-text: var(--color-red-400);
+  --color-priority-critical-border: --alpha(var(--color-red-500) / 50%);
+  --color-priority-high-text: var(--color-orange-400);
+  --color-priority-high-border: --alpha(var(--color-orange-500) / 50%);
+  --color-priority-standard-text: var(--color-cyan-400);
+  --color-priority-standard-border: --alpha(var(--color-cyan-500) / 50%);
+  --color-priority-low-text: var(--color-green-400);
+  --color-priority-low-border: --alpha(var(--color-green-500) / 50%);
+
+  /* Sidebar specific */
+  --color-sidebar-user-icon: var(--color-cyan-400);
+  --color-sidebar-username: var(--color-cyan-400);
+  --color-sidebar-selected-text: var(--color-cyan-400);
+  --color-ghost-button-text: --alpha(var(--color-cyan-400) / 70%);
+  --color-ghost-button-hover: var(--color-cyan-400);
+
+  /* Input specific */
+  --color-input-bg: --alpha(var(--color-slate-900) / 50%);
+  --color-input-border: --alpha(var(--color-cyan-900) / 50%);
+  --color-input-border-hover: --alpha(var(--color-cyan-800) / 70%);
+  --color-input-text: var(--color-cyan-100);
+  --color-input-placeholder: var(--color-slate-500);
+
+  /* Dialog specific */
+  --color-dialog-bg: --alpha(var(--color-slate-900) / 95%);
+  --color-dialog-border: --alpha(var(--color-cyan-500) / 50%);
+  --color-dialog-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
+
+  /* Landing page specific */
+  --color-landing-backdrop: transparent;
+}
+
+@layer base {
+  :root {
+    --foreground-rgb: 6, 182, 212;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 2, 6, 23;
+  }
+
+  /* Theme overrides - these redefine the CSS variables for different themes */
+  html.default {
+    /* Default theme uses the base @theme values, no overrides needed */
+    /* Ensure Performance Readout has proper contrast and visibility */
+    --color-secondary-text: #22d3ee; /* More visible cyan for secondary text */
+  }
+
+  /* Fix SVG compression in default theme due to letter-spacing interaction */
+  html.default button svg {
+    flex-shrink: 0;
+  }
+
+  /* Night Ops Theme Variables (based on nightops-design.json) */
+  html.nightops {
+    --color-primary: #0d0f12;
+    --color-secondary: #1a1c20;
+    --color-accent: #333333;
+    --color-primary-text: #eaeaea;
+    --color-secondary-text: #a0a0a0;
+    --color-tertiary-text: #666666;
+    --color-accent-text: #ffffff;
+    --color-highlight-text: #64ffda;
+    --color-border: #333333;
+    --color-border-highlight: #555555;
+    --color-glow: #64ffda;
+    --color-success: #33ff99;
+    --color-warning: #ffd700;
+    --color-danger: #ff4136;
+    --color-info: #00bfff;
+    --color-neutral: #a0a0a0;
+    --color-grid: rgba(255, 255, 255, 0.02);
+    --color-scrollbar-track: #0d0f12;
+    --color-scrollbar-thumb: #333333;
+    --color-scrollbar-thumb-hover: #555555;
+    --color-header-bg: #1a1c20;
+    --color-header-border: #333333;
+    --color-logo-bg: #ffffff;
+    --color-logo-text: #0d0f12;
+    --color-tertiary: #1a1c20;
+    --color-status-planning: #a0a0a0;
+    --color-status-active: #ffffff;
+    --color-status-complete: #33ff99;
+
+    --color-sidebar-border: #333333;
+    --color-avatar-bg: rgba(255, 255, 255, 0.1);
+    --color-avatar-border: #555555;
+    --color-selected-tab-bg: rgba(255, 255, 255, 0.1);
+    --color-selected-tab-border: #555555;
+    --color-icon-bg-cyan: rgba(255, 255, 255, 0.1);
+    --color-icon-bg-green: rgba(51, 255, 153, 0.1);
+    --color-icon-bg-red: rgba(255, 65, 54, 0.1);
+    --color-icon-border-cyan: #555555;
+    --color-icon-border-green: rgba(51, 255, 153, 0.3);
+    --color-icon-border-red: rgba(255, 65, 54, 0.3);
+    --color-status-completed: #33ff99;
+    --color-status-failed: #ff4136;
+    --color-status-aborted: #a0a0a0;
+    --color-command-ops-text: #ffffff;
+    --color-tabs-bg: #1a1c20;
+    --color-tabs-border: #333333;
+    --color-active-tab-bg: rgba(255, 255, 255, 0.1);
+    --color-active-tab-text: #ffffff;
+    --color-button-default-bg: rgba(255, 255, 255, 0.1);
+    --color-button-default-text: #ffffff;
+    --color-button-default-border: #555555;
+    --color-priority-critical-text: #ff4136;
+    --color-priority-critical-border: rgba(255, 65, 54, 0.3);
+    --color-priority-high-text: #ffd700;
+    --color-priority-high-border: rgba(255, 215, 0, 0.3);
+    --color-priority-standard-text: #ffffff;
+    --color-priority-standard-border: #555555;
+    --color-priority-low-text: #33ff99;
+    --color-priority-low-border: rgba(51, 255, 153, 0.3);
+
+    --color-sidebar-user-icon: #ffffff;
+    --color-sidebar-username: #ffffff;
+    --color-sidebar-selected-text: #ffffff;
+    --color-ghost-button-text: rgba(255, 255, 255, 0.7);
+    --color-ghost-button-hover: #ffffff;
+
+    --color-input-bg: rgba(26, 28, 32, 0.5);
+    --color-input-border: rgba(51, 51, 51, 0.5);
+    --color-input-border-hover: rgba(85, 85, 85, 0.7);
+    --color-input-text: #eaeaea;
+    --color-input-placeholder: #666666;
+
+    --color-dialog-bg: rgba(13, 15, 18, 0.95);
+    --color-dialog-border: rgba(100, 255, 218, 0.5);
+    --color-dialog-shadow: 0 0 30px rgba(100, 255, 218, 0.3);
+
+    --color-landing-backdrop: transparent;
+  }
+
+  /* CS:CZ Theme Variables (based on counter-strike-cz-design.json and screenshots) */
+  html.cscz {
+    --color-primary: #4c5b44;
+    --color-secondary: #3c4532;
+    --color-accent: #5a6349;
+    --color-primary-text: #d8ded3;
+    --color-secondary-text: #c4b550;
+    --color-tertiary-text: #6b7269;
+    --color-accent-text: #c4b550;
+    --color-highlight-text: #c4b550;
+    --color-border: #6f7a59;
+    --color-border-highlight: #373d2a;
+    --color-glow: #c4b550;
+    --color-success: #8d823a;
+    --color-warning: #c4b550;
+    --color-danger: #8a4a4a;
+    --color-info: #6f7a59;
+    --color-neutral: #7f8c7f;
+    --color-grid: rgba(196, 181, 80, 0.08);
+    --color-scrollbar-track: #4c5844;
+    --color-scrollbar-thumb: #6f7a59;
+    --color-scrollbar-thumb-hover: #c4b550;
+    --color-header-bg: #3e4637;
+    --color-header-border: #6f7a59;
+    --color-logo-bg: #c4b550;
+    --color-logo-text: #000000;
+    --color-tertiary: #3e4637;
+    --color-status-planning: #7f8c7f;
+    --color-status-active: #c4b550;
+    --color-status-complete: #8d823a;
+
+    /* CS:CZ specific border radius - ALL ZERO */
+    --border-radius-sm: 0px;
+    --border-radius-md: 0px;
+    --border-radius-lg: 0px;
+    --border-radius-xl: 0px;
+    --border-radius-full: 0px;
+
+    --color-sidebar-border: #6f7a59;
+    --color-avatar-bg: rgba(196, 181, 80, 0.15);
+    --color-avatar-border: #6f7a59;
+    --color-selected-tab-bg: rgba(196, 181, 80, 0.2);
+    --color-selected-tab-border: #c4b550;
+    --color-icon-bg-cyan: rgba(196, 181, 80, 0.15);
+    --color-icon-bg-green: rgba(141, 130, 58, 0.15);
+    --color-icon-bg-red: rgba(138, 74, 74, 0.15);
+    --color-icon-border-cyan: #6f7a59;
+    --color-icon-border-green: rgba(141, 130, 58, 0.5);
+    --color-icon-border-red: rgba(138, 74, 74, 0.5);
+    --color-status-completed: #8d823a;
+    --color-status-failed: #8a4a4a;
+    --color-status-aborted: #7f8c7f;
+    --color-command-ops-text: #c4b550;
+    --color-tabs-bg: #3e4637;
+    --color-tabs-border: #6f7a59;
+    --color-active-tab-bg: rgba(196, 181, 80, 0.2);
+    --color-active-tab-text: #c4b550;
+    --color-button-default-bg: #3e4637;
+    --color-button-default-text: #d8ded3;
+    --color-button-default-border: #6f7a59;
+    --color-priority-critical-text: #8a4a4a;
+    --color-priority-critical-border: rgba(138, 74, 74, 0.5);
+    --color-priority-high-text: #c4b550;
+    --color-priority-high-border: rgba(196, 181, 80, 0.5);
+    --color-priority-standard-text: #d8ded3;
+    --color-priority-standard-border: #6f7a59;
+    --color-priority-low-text: #8d823a;
+    --color-priority-low-border: rgba(141, 130, 58, 0.5);
+
+    --color-sidebar-user-icon: #c4b550;
+    --color-sidebar-username: #c4b550;
+    --color-sidebar-selected-text: #c4b550;
+    --color-ghost-button-text: rgba(196, 181, 80, 0.7);
+    --color-ghost-button-hover: #c4b550;
+
+    --color-input-bg: #3e4637;
+    --color-input-border: #6f7a59;
+    --color-input-border-hover: #c4b550;
+    --color-input-text: #d8ded3;
+    --color-input-placeholder: #7f8c7f;
+
+    --color-dialog-bg: rgba(76, 88, 68, 0.95);
+    --color-dialog-border: rgba(196, 181, 80, 0.5);
+    --color-dialog-shadow: none;
+
+    --color-landing-backdrop: transparent;
+  }
+}
+
+body {
+  @apply min-h-screen;
+  color: var(--color-primary-text);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+html.default body {
+  @apply text-primary-text;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--foreground-rgb)) 0,
+    rgb(var(--background-start-rgb)) 50vh,
+    rgb(var(--background-end-rgb)) 100vh
+  );
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+html.nightops body {
+  background: var(--color-primary);
+  font-family:
+    var(--font-roboto-mono, 'Roboto Mono'), 'Source Code Pro', 'Menlo',
+    monospace;
+}
+
+html.cscz body {
+  background: var(--color-primary);
+  font-family:
+    var(--font-silkscreen, 'Silkscreen'), 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+html.default body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(--alpha(var(--color-cyan-500) / 5%) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      --alpha(var(--color-cyan-500) / 5%) 1px,
+      transparent 1px
+    );
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Smaller grid for more technical look */
+html.nightops body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-image 0.3s ease;
+}
+
+/* Pixelated grid pattern for CS:CZ theme */
+html.cscz body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/cscz-bg-image.jpg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: right;
+  pointer-events: none;
+  z-index: -100;
+  transition: background-image 0.3s ease;
+}
+
+/* html.csczimg body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(var(--color-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-grid) 1px, transparent 1px);
+  background-size: 8px 8px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background-image 0.3s ease;
+} */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html.default ::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+html.default ::-webkit-scrollbar-thumb {
+  @apply bg-cyan-800 rounded-sm;
+}
+
+html.default ::-webkit-scrollbar-thumb:hover {
+  @apply bg-cyan-700;
+}
+
+html.nightops ::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+html.nightops ::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 2px;
+}
+
+html.nightops ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover);
+}
+
+html.cscz ::-webkit-scrollbar-track {
+  background: var(--color-scrollbar-track);
+}
+
+html.cscz ::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: 0;
+}
+
+html.cscz ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-thumb-hover);
+}
+
+@layer utilities {
+  .glow-cyan {
+    text-shadow:
+      0 0 10px --alpha(var(--color-cyan-500) / 50%),
+      0 0 20px --alpha(var(--color-cyan-500) / 30%),
+      0 0 30px --alpha(var(--color-cyan-500) / 20%);
+  }
+
+  .glow-red {
+    text-shadow:
+      0 0 10px --alpha(var(--color-red-500) / 50%),
+      0 0 20px --alpha(var(--color-red-500) / 30%),
+      0 0 30px --alpha(var(--color-red-500) / 20%);
+  }
+
+  .glow-green {
+    text-shadow:
+      0 0 10px --alpha(var(--color-green-500) / 50%),
+      0 0 20px --alpha(var(--color-green-500) / 30%),
+      0 0 30px --alpha(var(--color-green-500) / 20%);
+  }
+
+  .glow-orange {
+    text-shadow:
+      0 0 10px --alpha(var(--color-orange-400) / 50%),
+      0 0 20px --alpha(var(--color-orange-400) / 30%),
+      0 0 30px --alpha(var(--color-orange-400) / 20%);
+  }
+
+  /* CS:CZ theme - NO GLOW effects - ONLY for CS:CZ theme */
+  html.cscz .glow-cyan,
+  html.cscz .glow-red,
+  html.cscz .glow-green,
+  html.cscz .glow-orange,
+  html.cscz .glow-cscz {
+    text-shadow: none;
+  }
+}
+
+@layer utilities {
+  /* Mobile-friendly interaction utilities */
+  .mobile-touch-feedback {
+    @apply active:scale-95 active:brightness-110 md:active:scale-100 transition-transform;
+  }
+
+  .mobile-tap-highlight {
+    -webkit-tap-highlight-color: rgba(var(--color-glow), 0.2);
+    tap-highlight-color: rgba(var(--color-glow), 0.2);
+  }
+
+  .nightops-panel-border {
+    border: 1px solid var(--color-border);
+    position: relative;
+  }
+
+  .cscz-bevel-raised {
+    border: 1px solid;
+    border-color: var(--color-border) var(--color-border-highlight)
+      var(--color-border-highlight) var(--color-border);
+  }
+
+  .cscz-bevel-recessed {
+    border: 1px solid;
+    border-color: var(--color-border-highlight) var(--color-border)
+      var(--color-border) var(--color-border-highlight);
+  }
+
+  .cscz-pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* CS:CZ theme - override ALL rounded classes to be square - ONLY for CS:CZ theme */
+  html.cscz .rounded-sm,
+  html.cscz .rounded-md,
+  html.cscz .rounded-lg,
+  html.cscz .rounded-xl,
+  html.cscz .rounded-2xl,
+  html.cscz .rounded-3xl,
+  html.cscz .rounded-full,
+  html.cscz .rounded {
+    border-radius: 0px !important;
+  }
+
+  html.cscz .rounded-t-sm,
+  html.cscz .rounded-t-md,
+  html.cscz .rounded-t-lg,
+  html.cscz .rounded-t-xl,
+  html.cscz .rounded-t-2xl,
+  html.cscz .rounded-t-3xl,
+  html.cscz .rounded-t,
+  html.cscz .rounded-b-sm,
+  html.cscz .rounded-b-md,
+  html.cscz .rounded-b-lg,
+  html.cscz .rounded-b-xl,
+  html.cscz .rounded-b-2xl,
+  html.cscz .rounded-b-3xl,
+  html.cscz .rounded-b,
+  html.cscz .rounded-l-sm,
+  html.cscz .rounded-l-md,
+  html.cscz .rounded-l-lg,
+  html.cscz .rounded-l-xl,
+  html.cscz .rounded-l-2xl,
+  html.cscz .rounded-l-3xl,
+  html.cscz .rounded-l,
+  html.cscz .rounded-r-sm,
+  html.cscz .rounded-r-md,
+  html.cscz .rounded-r-lg,
+  html.cscz .rounded-r-xl,
+  html.cscz .rounded-r-2xl,
+  html.cscz .rounded-r-3xl,
+  html.cscz .rounded-r {
+    border-radius: 0px !important;
+  }
+
+  /* Mobile-specific performance optimizations */
+  @media (max-width: 768px) {
+    /* Default theme - reduce glow effects on mobile for performance */
+    html.default .hover\:shadow-\[0_0_20px_var\(--color-glow\)\]\/20:hover,
+    html.default .hover\:shadow-\[0_0_15px_var\(--color-glow\)\]:hover,
+    html.default .animate-pulse-glow {
+      box-shadow: none !important;
+      animation: none !important;
+    }
+
+    /* Reduce grid pattern density on mobile for better clarity */
+    html.default body::before {
+      background-size: 100px 100px;
+      opacity: 0.3;
+    }
+
+    html.nightops body::before {
+      background-size: 64px 64px;
+      opacity: 0.4;
+    }
+
+    /* Night Ops theme - enhance contrast on mobile for WCAG compliance */
+    html.nightops .text-secondary-text {
+      color: #b0b0b0 !important; /* Increased from #a0a0a0 for better contrast */
+    }
+
+    html.nightops .text-tertiary-text {
+      color: #888888 !important; /* Increased from #666666 for better contrast */
+    }
+
+    /* CS:CZ theme - improve readability on mobile while maintaining pixelated aesthetic */
+    html.cscz body {
+      /* Increase base font size for better mobile readability */
+      font-size: 16px !important; /* Increased from 14px */
+    }
+
+    html.cscz .cscz-title {
+      font-size: 18px !important; /* Increased from 16px */
+    }
+
+    html.cscz .cscz-label {
+      font-size: 16px !important; /* Increased from 14px */
+    }
+
+    html.cscz .cscz-button {
+      font-size: 16px !important; /* Increased from 14px */
+      padding: 8px 12px !important; /* Increased padding for better touch targets */
+    }
+
+    /* CS:CZ specific tab styling - only fix overflow on mobile */
+    html.cscz [role='tablist'] {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      justify-content: flex-start; /* Align tabs to start when scrolling */
+    }
+
+    html.cscz [role='tablist']::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    html.cscz [role='tab'] {
+      flex-shrink: 0; /* Prevent tabs from shrinking */
+      min-width: fit-content; /* Ensure tabs don't get too small */
+    }
+
+    /* Prevent horizontal scrolling in CS:CZ theme */
+    html.cscz body {
+      overflow-x: hidden;
+    }
+
+    /* CS:CZ responsive background adjustments for mobile */
+    html.cscz body::before {
+      background-size: 120% 100%;
+      background-position: center;
+      opacity: 0.85;
+    }
+
+    /* Page-specific background adjustments for mobile */
+    html.cscz body.dashboard-page::before {
+      background-size: 130% 100%;
+      background-position: center;
+      opacity: 0.75;
+    }
+
+    html.cscz body.landing-page::before,
+    html.cscz body.auth-page::before {
+      background-size: 120% 100%;
+      background-position: center;
+      opacity: 0.85;
+    }
+
+    /* CS:CZ fallback fonts for better mobile readability */
+    html.cscz {
+      font-family:
+        var(--font-silkscreen, 'Silkscreen'), 'Courier New', 'Monaco',
+        'Consolas', monospace !important;
+    }
+
+    /* Ensure minimum touch target sizes on mobile */
+    html button,
+    html [role='button'],
+    html input,
+    html select {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Tablet-specific responsive adjustments */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    /* CS:CZ responsive background adjustments for tablet */
+    html.cscz body::before {
+      background-size: 95% 100%;
+      background-position: right;
+    }
+
+    /* Page-specific background adjustments for tablet */
+    html.cscz body.dashboard-page::before {
+      background-size: 90% 100%;
+      background-position: right;
+    }
+
+    html.cscz body.landing-page::before,
+    html.cscz body.auth-page::before {
+      background-size: 100% 100%;
+      background-position: center;
+    }
+  }
+
+  /* Desktop-specific responsive adjustments */
+  @media (min-width: 1025px) {
+    /* CS:CZ responsive background adjustments for desktop */
+    html.cscz body::before {
+      background-size: 100% 100%;
+      background-position: right;
+    }
+
+    /* Page-specific background adjustments for desktop */
+    html.cscz body.dashboard-page::before {
+      background-size: 90% 100%;
+      background-position: right;
+    }
+
+    html.cscz body.landing-page::before,
+    html.cscz body.auth-page::before {
+      background-size: 100% 100%;
+      background-position: center;
+    }
+  }
+
+  /* Mobile-first responsive typography */
+  @media (max-width: 640px) {
+    /* Base mobile typography adjustments */
+    h1 {
+      font-size: 1.25rem;
+    } /* text-xl */
+    h2 {
+      font-size: 1.125rem;
+    } /* text-lg */
+    h3 {
+      font-size: 1rem;
+    } /* text-base */
+
+    /* Reduce spacing on mobile */
+    .p-6 {
+      padding: 1rem;
+    } /* p-4 equivalent */
+    .gap-6 {
+      gap: 1rem;
+    } /* gap-4 equivalent */
+    .my-8 {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    } /* my-4 equivalent */
+  }
+
+  /* Very small screens optimization */
+  @media (max-width: 480px) {
+    /* CS:CZ background adjustments for very small screens */
+    html.cscz body::before {
+      background-size: 140% 100%;
+      background-position: center;
+      opacity: 0.7;
+    }
+
+    html.cscz body.dashboard-page::before {
+      background-size: 150% 100%;
+      background-position: center;
+      opacity: 0.6;
+    }
+  }
+
+  @media (min-width: 640px) {
+    /* Small screens and up */
+    h1 {
+      font-size: 1.5rem;
+    } /* text-2xl */
+    h2 {
+      font-size: 1.25rem;
+    } /* text-xl */
+    h3 {
+      font-size: 1.125rem;
+    } /* text-lg */
+  }
+
+  @media (min-width: 768px) {
+    /* Medium screens and up */
+    h1 {
+      font-size: 1.875rem;
+    } /* text-3xl */
+    h2 {
+      font-size: 1.5rem;
+    } /* text-2xl */
+  }
+
+  /* CS:CZ theme - remove ALL glow and shadow effects - ONLY for CS:CZ theme */
+  html.cscz button:hover,
+  html.cscz .hover\:shadow-lg:hover {
+    box-shadow: none !important;
+  }
+
+  /* CS:CZ theme - add beveled effects to buttons - ONLY for CS:CZ theme */
+  html.cscz button {
+    border: 1px solid;
+    border-color: var(--color-border) var(--color-border-highlight)
+      var(--color-border-highlight) var(--color-border);
+    transition: border-color 0.2s ease;
+  }
+
+  html.cscz button:hover {
+    filter: brightness(1.1);
+    border-color: var(--color-border) var(--color-border-highlight)
+      var(--color-border-highlight) var(--color-border);
+  }
+
+  html.cscz button:active {
+    border-color: var(--color-border-highlight) var(--color-border)
+      var(--color-border) var(--color-border-highlight);
+  }
+
+  /* CS:CZ theme - add beveled effects to inputs - ONLY for CS:CZ theme */
+  html.cscz input,
+  html.cscz textarea,
+  html.cscz select {
+    border: 1px solid;
+    border-color: var(--color-border-highlight) var(--color-border)
+      var(--color-border) var(--color-border-highlight);
+  }
+
+  /* CS:CZ theme - add beveled effects to cards - ONLY for CS:CZ theme */
+  html.cscz .card,
+  html.cscz [data-card] {
+    border: 1px solid;
+    border-color: var(--color-border) var(--color-border-highlight)
+      var(--color-border-highlight) var(--color-border);
+  }
+}
+
+.nightops-panel-border::before {
+  content: '[';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  color: var(--color-accent-text);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.nightops-panel-border::after {
+  content: ']';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  color: var(--color-accent-text);
+  font-size: 12px;
+  line-height: 1;
+}
+
+html.nightops .nightops-panel {
+  background: var(--color-secondary);
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+html.nightops .nightops-panel::before {
+  content: '[';
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  color: var(--color-accent-text);
+  font-size: 12px;
+  line-height: 1;
+  background: var(--color-primary);
+  padding: 0 4px;
+}
+
+html.nightops .nightops-panel::after {
+  content: ']';
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  color: var(--color-accent-text);
+  font-size: 12px;
+  line-height: 1;
+  background: var(--color-primary);
+  padding: 0 4px;
+}
+
+html.nightops .nightops-title {
+  font-family:
+    var(--font-roboto-mono, 'Roboto Mono'), 'Source Code Pro', 'Menlo',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 400;
+  color: var(--color-primary-text);
+}
+
+html.nightops .nightops-label {
+  font-family:
+    var(--font-roboto-mono, 'Roboto Mono'), 'Source Code Pro', 'Menlo',
+    monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-secondary-text);
+}
+
+/* CS:CZ Theme Specific Styles - ONLY for CS:CZ theme */
+html.cscz .cscz-panel {
+  background: var(--color-secondary);
+  position: relative;
+}
+
+html.cscz .cscz-title {
+  font-family:
+    var(--font-silkscreen, 'Silkscreen'), 'Press Start 2P', monospace;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-primary-text);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+html.cscz .cscz-label {
+  font-family:
+    var(--font-silkscreen, 'Silkscreen'), 'Press Start 2P', monospace;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-secondary-text);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+html.cscz .cscz-button {
+  font-family:
+    var(--font-silkscreen, 'Silkscreen'), 'Press Start 2P', monospace;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 4px 8px;
+  background-color: var(--color-secondary);
+  color: var(--color-primary-text);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+html.cscz .cscz-button:hover {
+  filter: brightness(1.1);
+}
+
+html.cscz .cscz-button:active {
+  border-color: var(--color-border-highlight) var(--color-border)
+    var(--color-border) var(--color-border-highlight);
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.terminal-flicker {
+  animation: flicker 5s linear infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scan-line {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    --alpha(var(--color-cyan-500) / 80%),
+    transparent
+  );
+  animation: scan-line 8s linear infinite;
+  pointer-events: none;
+  z-index: 50;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+  5% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.94;
+  }
+  15% {
+    opacity: 0.98;
+  }
+  25% {
+    opacity: 0.92;
+  }
+  30% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.95;
+  }
+  40% {
+    opacity: 0.97;
+  }
+  45% {
+    opacity: 0.93;
+  }
+  60% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.96;
+  }
+  80% {
+    opacity: 0.94;
+  }
+  90% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Slower scan for more tactical feel */
+html.nightops .scan-line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-glow),
+    transparent
+  );
+  height: 1px;
+  opacity: 0.6;
+  animation-duration: 12s;
+}
+
+/* CS:CZ scan line effect - more retro/pixelated - ONLY for CS:CZ theme */
+html.cscz .scan-line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-glow),
+    transparent
+  );
+  height: 1px;
+  opacity: 0.4;
+  animation-duration: 10s;
+}
+
+/* Input and textarea placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-input-placeholder);
+}
+
+/* Auth page specific styling */
+/* .auth-card {
+  box-shadow: var(--color-dialog-shadow);
+  backdrop-filter: blur(10px);
+} */
+
+/* .auth-card:hover {
+  box-shadow: 0 0 40px var(--color-glow), var(--color-dialog-shadow);
+} */
+
+/* Theme-specific auth styling */
+/* html.nightops .auth-card {
+  background: rgba(13, 15, 18, 0.95);
+  border: 1px solid rgba(100, 255, 218, 0.3);
+} */
+
+/* html.cscz .auth-card {
+  background: rgba(76, 91, 68, 0.95);
+  border: 1px solid var(--color-border);
+} */
+
+/* Shimmer loading animation */
+.shimmer-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Theme-specific shimmer colors */
+html.default .shimmer-loading::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(103, 232, 249, 0.15),
+    transparent
+  );
+}
+
+html.nightops .shimmer-loading::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(100, 255, 218, 0.15),
+    transparent
+  );
+}
+
+html.cscz .shimmer-loading::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(196, 181, 80, 0.15),
+    transparent
+  );
+}
+
+/* Toast theme-specific styling */
+.toast-container {
+  font-family: var(--font-roboto-mono, 'Roboto Mono'), monospace;
+}
+
+/* Default theme toast styling - add glow effects */
+html.default .toast-container > div {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
+html.default .toast-container .toast-success {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+html.default .toast-container .toast-error {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+html.nightops .toast-container {
+  font-family:
+    var(--font-roboto-mono, 'Roboto Mono'), 'Source Code Pro', 'Menlo',
+    monospace;
+}
+
+html.cscz .toast-container {
+  font-family:
+    var(--font-silkscreen, 'Silkscreen'), 'Press Start 2P', monospace;
+}
+
+/* CS:CZ toast styling - square borders and pixelated look */
+html.cscz .toast-container > div {
+  border-radius: 0px !important;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  border: 1px solid;
+  border-color: var(--color-border) var(--color-border-highlight)
+    var(--color-border-highlight) var(--color-border);
+}
+
+html.cscz .toast-container button {
+  border-radius: 0px !important;
+  border: 1px solid;
+  border-color: var(--color-border-highlight) var(--color-border)
+    var(--color-border) var(--color-border-highlight);
+}
+
+html.cscz .toast-container button:hover {
+  border-color: var(--color-border) var(--color-border-highlight)
+    var(--color-border-highlight) var(--color-border);
+  filter: brightness(1.1);
+}
+
+/* Night Ops toast styling - clean tactical styling */
+html.nightops .toast-container > div {
+  position: relative;
+  background: rgba(13, 15, 18, 0.95) !important;
+  border: 1px solid var(--color-glow) !important;
+  color: var(--color-glow) !important;
+}
+
+/* Night Ops success/error coloring */
+html.nightops .toast-container .toast-success {
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+}
+
+html.nightops .toast-container .toast-error {
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+}
+
+html.nightops .toast-container button {
+  color: var(--color-secondary-text) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+html.nightops .toast-container button:hover {
+  background: var(--color-border) !important;
+  color: var(--color-primary-text) !important;
+}

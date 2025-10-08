@@ -1,0 +1,40 @@
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Dependencies
+node_modules/
+
+# Generated files
+.drizzle/
+drizzle/
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Prettier config itself
+.prettierrc
+.prettierignore

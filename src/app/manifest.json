@@ -1,0 +1,19 @@
+{
+  "name": "Command Ops - Executive Function Support System",
+  "short_name": "Command Ops",
+  "description": "ADHD-friendly task management system designed to eliminate overwhelm and task paralysis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
+}

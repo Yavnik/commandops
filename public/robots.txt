@@ -1,0 +1,16 @@
+# Robots.txt for Command Ops
+User-agent: *
+Allow: /
+
+# Disallow protected routes
+Disallow: /signin
+Disallow: /onboarding
+Disallow: /dashboard
+Disallow: /missions
+Disallow: /archive
+Disallow: /focus
+Disallow: /privacy
+Disallow: /terms
+
+# Sitemap location
+Sitemap: https://commandops.app/sitemap.xml
