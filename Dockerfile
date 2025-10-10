@@ -1,25 +1,23 @@
 # Use Bun with Node.js compatibility
 FROM oven/bun:1.2 AS base
 
-# Install Node.js for tooling compatibility (drizzle-kit)
-RUN apt-get update && apt-get install -y \
-    curl \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install dependencies only when needed
+# Install dependencies for building
 FROM base AS deps
 WORKDIR /app
 
 # Copy package files
 COPY package.json bun.lock* ./
 
-# Install all dependencies, including devDependencies for drizzle-kit
+# Install all dependencies for build
 RUN bun install --frozen-lockfile
 
-# Rebuild the source code only when needed
+# Install production dependencies for runtime (without dev tools)
+FROM base AS prod-deps
+WORKDIR /app
+COPY package.json bun.lock* ./
+RUN bun install --frozen-lockfile --production
+
+# Build the application
 FROM base AS builder
 WORKDIR /app
 
@@ -29,7 +27,18 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
-# Build the application
+# Ensure build doesn't require real runtime secrets
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV CI=1
+ENV DATABASE_URL=postgresql://dummy_user:dummy_password@postgres:5432/command_ops
+ENV BETTER_AUTH_SECRET=BETTER_AUTH_SECRET
+ENV GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID
+ENV GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET
+ENV GITHUB_CLIENT_ID=GITHUB_CLIENT_ID
+ENV GITHUB_CLIENT_SECRET=GITHUB_CLIENT_SECRET
+
+
+# Build Next.js (no server secrets passed at build time)
 RUN bun run build
 
 # Production image
@@ -40,7 +49,7 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy built application
+# Copy built application artifacts
 COPY --from=builder /app/public ./public
 
 # Set the correct permission for prerender cache
@@ -50,27 +59,23 @@ RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy migration files and scripts
-COPY --from=deps /app/node_modules ./node_modules
+# Copy migrations and migrator script
 COPY --chown=nextjs:nodejs drizzle ./drizzle
-COPY --chown=nextjs:nodejs src/db ./src/db
-COPY --chown=nextjs:nodejs drizzle.config.ts ./
-COPY --chown=nextjs:nodejs package.json ./
-COPY --chown=nextjs:nodejs scripts/start.sh ./start.sh
+COPY --chown=nextjs:nodejs scripts/migrate.ts ./scripts/migrate.ts
+COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-RUN chmod +x ./start.sh
-
-# Switch to non-root user
+# Run as non-root
 USER nextjs
 
 EXPOSE 3000
 
+ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD bun --version || exit 1
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
-# Start the application with migrations
-CMD ["./start.sh"]
+# Start the application
+CMD ["bun", "server.js"]
