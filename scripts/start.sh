@@ -2,7 +2,7 @@
 set -e
 
 echo "Running database migrations..."
-npx drizzle-kit migrate
+bunx drizzle-kit migrate
 
-echo "Starting application..."
+echo "Starting Command Ops application..."
 exec bun server.js 

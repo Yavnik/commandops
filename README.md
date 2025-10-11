@@ -1,40 +1,51 @@
 # Command Ops - Life Management System
 
-Transform your daily productivity into an engaging sci-fi command ops experience. This app gamifies task management with a futuristic military/gaming interface.
+> An open-source, self-hostable task management system with a sci-fi command center interface
 
-## Features
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white)](https://nextjs.org/)
+
+Transform your daily productivity into an engaging sci-fi command ops experience. Command Ops is a fully open-source task management app that you can self-host on your own infrastructure - own your data, customize your experience.
+
+## ✨ Features
 
 - **Quest System**: Tasks are "Quests" with sub-tasks as "Objectives"
 - **XP & Leveling**: Gain experience and rank up as you complete quests
 - **Priority Levels**: Critical, High, Standard, and Low priority missions
 - **Performance Tracking**: Monitor your success rate and weekly stats
 - **Immersive Theme**: Dark sci-fi UI with glowing elements and animations
-- **Database**: PostgreSQL with Drizzle ORM for persistent data storage
+- **Self-Hostable**: Full control over your data with Docker deployment
+- **PostgreSQL Backend**: Robust database with Drizzle ORM
 
-## Getting Started
+## 🚀 Quick Start (Self-Hosting)
 
-### Installation
+Deploy Command Ops on your own server in minutes with Docker:
 
 ```bash
 # Clone the repository
 git clone https://github.com/Yavnik/commandops.git
 cd commandops
 
-# Install dependencies
-bun install
-
-# Set up environment variables
+# Configure your environment
 cp .env.example .env
-# Edit .env with your database credentials and other settings
+nano .env  # Set your secrets and domain
 
-# Set up the database
-bunx drizzle-kit push
-
-# Run the development server
-bun dev
+# Deploy with Docker
+docker compose up -d --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to access the Command Ops.
+Open `http://localhost:3000` and start your first mission!
+
+📖 **[Full Deployment Guide](DEPLOY.md)** - Complete instructions for self-hosting
+
+## 🎯 Why Self-Host?
+
+- **Data Privacy**: Your tasks, your server, your control
+- **Customization**: Modify and extend to fit your workflow
+- **No Vendor Lock-in**: Own your productivity data forever
+- **Free Forever**: No subscriptions or usage limits
+- **Open Source**: Transparent code you can audit and trust
 
 ## Usage
 
@@ -63,33 +74,59 @@ Open [http://localhost:3000](http://localhost:3000) to access the Command Ops.
 - Theme customization (Quartermaster)
 - Campaign system for grouping related quests
 
-## Development
+## 💻 Local Development
 
-### Database Management
+Want to contribute or customize Command Ops? Set up a local development environment:
 
 ```bash
-# Generate new migrations after schema changes
-bunx drizzle-kit generate
+# Install dependencies
+bun install
 
-# Apply migrations to database
-bunx drizzle-kit migrate
+# Set up environment variables
+cp .env.example .env
 
-# Open Drizzle Studio for database inspection
-bunx drizzle-kit studio
+# Initialize database
+bunx drizzle-kit push
+
+# Start development server
+bun dev
 ```
 
-### Code Structure
+### Development Commands
 
-The app follows Next.js 15 App Router conventions with a clear separation between server and client components:
+```bash
+bun dev                    # Start dev server with Turbopack
+bun run build             # Build for production
+bun run lint              # Run ESLint
+bunx drizzle-kit generate # Generate database migrations
+bunx drizzle-kit studio   # Open Drizzle Studio
+```
 
-- **Server Components**: Handle data fetching and server-side logic
-- **Client Components**: Handle user interactions and client-side state
-- **Server Actions**: Handle form submissions and mutations
-- **Optimistic Updates**: Zustand store implements optimistic UI updates with server sync
+### Architecture
 
-### Key Patterns
+- **Next.js 15** with App Router and Turbopack
+- **TypeScript** with strict mode
+- **PostgreSQL** + Drizzle ORM
+- **Better Auth** for authentication
+- **Zustand** for client state
+- **Tailwind CSS** with custom sci-fi themes
 
-- **Progressive Hydration**: `StoreInitializer` prevents hydration mismatches
-- **Error Boundaries**: Comprehensive error handling with recovery options
-- **Type Safety**: Strict TypeScript with proper type definitions
-- **Theme System**: Custom CSS variables for three sci-fi themes
+## 🤝 Contributing
+
+Contributions are welcome! Whether it's bug fixes, new features, or documentation improvements. Raise a PR or bring it up in the issues section.
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Support
+
+If you find Command Ops useful, consider:
+- ⭐ Starring the repository
+- 🐛 Reporting bugs or requesting features via [Issues](https://github.com/Yavnik/commandops/issues)
+- 🔧 Contributing code or documentation
+- 📢 Sharing with others who might benefit
+
+---
+
+**Built with ❤️ for self-hosters and productivity enthusiasts**
