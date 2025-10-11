@@ -220,7 +220,7 @@ const LandingPageComponent = memo(() => {
                     className="text-base md:text-lg mb-4 max-w-lg"
                     style={{ color: 'var(--color-secondary-text)' }}
                   >
-                    An <strong className="text-accent-text">ADHD-friendly task management system</strong> designed to eliminate overwhelm and task paralysis. Transform your productivity with a clean, sci-fi interface built for focus.
+                    An <strong style={{ color: 'var(--color-accent-text)' }}>ADHD-friendly task management system</strong> designed to eliminate overwhelm and task paralysis. Transform your productivity with a clean, sci-fi interface built for focus.
                   </p>
                   <div className="flex items-center gap-2 mb-8 justify-center lg:justify-start">
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border"
@@ -266,7 +266,11 @@ const LandingPageComponent = memo(() => {
                         arsenalSection?.scrollIntoView({ behavior: 'smooth' });
                       }}
                       variant="outline"
-                      className="min-w-[240px] text-lg py-6 border-accent-text/50 hover:bg-accent-text/10"
+                      className="min-w-[240px] text-lg py-6"
+                      style={{
+                        borderColor: 'var(--color-accent-text)',
+                        opacity: 0.7
+                      }}
                     >
                       <Target className="mr-2 h-6 w-6" />
                       SEE HOW IT WORKS
