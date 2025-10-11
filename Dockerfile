@@ -1,5 +1,5 @@
-# Use Bun with Node.js compatibility
-FROM oven/bun:1.2 AS base
+# Use Bun with Alpine for smaller base image
+FROM oven/bun:1.2-alpine AS base
 
 # Install dependencies for building
 FROM base AS deps
@@ -10,12 +10,6 @@ COPY package.json bun.lock* ./
 
 # Install all dependencies for build
 RUN bun install --frozen-lockfile
-
-# Install production dependencies for runtime (without dev tools)
-FROM base AS prod-deps
-WORKDIR /app
-COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile --production
 
 # Build the application
 FROM base AS builder
@@ -59,10 +53,14 @@ RUN mkdir .next && chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy migrations and migrator script
+# Copy migrations and migrator script with dependencies
 COPY --chown=nextjs:nodejs drizzle ./drizzle
 COPY --chown=nextjs:nodejs scripts/migrate.ts ./scripts/migrate.ts
-COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# Copy node_modules needed for migration script
+# The standalone build doesn't include these, so we copy them from deps
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/postgres ./node_modules/postgres
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
 
 # Run as non-root
 USER nextjs
@@ -73,9 +71,9 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Health check
+# Health check using wget (already available in Alpine)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 # Start the application
 CMD ["bun", "server.js"]
