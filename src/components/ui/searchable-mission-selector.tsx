@@ -55,6 +55,10 @@ export function SearchableMissionSelector({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Latest-callback refs so the retry handlers don't reference their own
+  // useCallback before it is declared (react-hooks/immutability).
+  const loadMissionsRef = useRef<() => void>(undefined);
+  const performSearchRef = useRef<(query: string) => void>(undefined);
 
   const loadMissions = useCallback(async () => {
     setIsLoading(true);
@@ -71,7 +75,7 @@ export function SearchableMissionSelector({
       console.error('Failed to load missions:', error);
       showEnhancedErrorToast(error, {
         context: 'Mission Loading',
-        onRetry: () => loadMissions(),
+        onRetry: () => loadMissionsRef.current?.(),
       });
     } finally {
       setIsLoading(false);
@@ -102,7 +106,7 @@ export function SearchableMissionSelector({
         setSearchResults([]);
         showEnhancedErrorToast(error, {
           context: 'Mission Search',
-          onRetry: () => performSearch(query),
+          onRetry: () => performSearchRef.current?.(query),
         });
       } finally {
         setIsLoading(false);
@@ -110,6 +114,17 @@ export function SearchableMissionSelector({
     }, 300);
   }, []);
 
+  // Keep the latest-callback refs current for the retry handlers above.
+  useEffect(() => {
+    loadMissionsRef.current = loadMissions;
+    performSearchRef.current = performSearch;
+  }, [loadMissions, performSearch]);
+
+  // Data-fetching effects: load missions when the popover opens, and run the
+  // debounced search when the query changes. These call the async loaders
+  // (which setState); set-state-in-effect is a false positive for on-demand
+  // data fetching.
+  /* eslint-disable react-hooks/set-state-in-effect */
   // Initialize missions when popover opens
   useEffect(() => {
     if (isOpen && !isInitialized) {
@@ -125,6 +140,7 @@ export function SearchableMissionSelector({
       setSearchResults([]);
     }
   }, [searchQuery, performSearch]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Get missions to display
   const displayMissions = useMemo(() => {

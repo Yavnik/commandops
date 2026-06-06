@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { useArchiveStore } from '@/store/archive-store';
 import { Input } from '@/components/ui/input';
@@ -36,8 +36,12 @@ export const QuestFilters: React.FC = () => {
   // Track applied filters to detect changes
   const [appliedFilters, setAppliedFilters] = useState(questFilters);
 
-  // Sync applied filters when filters are reset externally
-  useEffect(() => {
+  // Sync applied filters when filters are reset externally. Runs during render
+  // on a questFilters change instead of in an effect.
+  const [prevQuestFilters, setPrevQuestFilters] = useState(questFilters);
+  if (questFilters !== prevQuestFilters) {
+    setPrevQuestFilters(questFilters);
+
     // If all filters match defaults, sync the applied state
     const isDefaultState =
       JSON.stringify(questFilters) ===
@@ -55,7 +59,7 @@ export const QuestFilters: React.FC = () => {
     ) {
       setAppliedFilters({ ...questFilters });
     }
-  }, [questFilters, appliedFilters]);
+  }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestFilters({ searchQuery: e.target.value });

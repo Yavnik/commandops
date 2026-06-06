@@ -1,12 +1,6 @@
 'use client';
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -107,14 +101,14 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
 
   const [tempRange, setTempRange] = useState<DateRange>(range);
 
-  useEffect(() => {
+  // Sync tempRange when the incoming range changes (render-time).
+  const [prevRange, setPrevRange] = useState(range);
+  if (range !== prevRange) {
+    setPrevRange(range);
     setTempRange(range);
-  }, [range]);
+  }
 
   const openedRangeRef = useRef<DateRange | undefined>(undefined);
-  const [selectedPreset, setSelectedPreset] = useState<string | undefined>(
-    undefined
-  );
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
@@ -197,10 +191,10 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
     setTempRange(newRange);
   };
 
-  const checkPreset = useCallback((): void => {
+  // Derive the matching preset name from the current range (render-time).
+  const selectedPreset = useMemo<string | undefined>(() => {
     if (!range.from) {
-      setSelectedPreset(undefined);
-      return;
+      return undefined;
     }
 
     for (const preset of PRESETS) {
@@ -222,17 +216,12 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
         normalizedRangeFrom.getTime() === normalizedPresetFrom.getTime() &&
         normalizedRangeTo?.getTime() === normalizedPresetTo?.getTime()
       ) {
-        setSelectedPreset(preset.name);
-        return;
+        return preset.name;
       }
     }
 
-    setSelectedPreset(undefined);
+    return undefined;
   }, [range]);
-
-  useEffect(() => {
-    checkPreset();
-  }, [checkPreset]);
 
   const PresetButton = ({
     preset,

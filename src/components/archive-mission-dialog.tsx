@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCommandOpsStore } from '@/store/command-ops-store';
 import {
   Dialog,
@@ -34,13 +34,16 @@ export function ArchiveMissionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reportError, setReportError] = useState('');
 
-  // Reset form when dialog opens/closes
-  useEffect(() => {
+  // Reset form when the dialog closes (adjust state during render on the
+  // open->closed transition instead of in an effect).
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) {
       setAfterActionReport('');
       setReportError('');
     }
-  }, [open]);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
