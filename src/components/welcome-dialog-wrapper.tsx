@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { WelcomeDialog } from './welcome-dialog';
 import { NewQuestDialog } from './new-quest-dialog';
@@ -8,27 +8,29 @@ import { NewQuestDialog } from './new-quest-dialog';
 export function WelcomeDialogWrapper() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [showDialog, setShowDialog] = useState(false);
+  const showHelp = searchParams.get('showHelp');
+  const [showDialog, setShowDialog] = useState(() => showHelp === 'true');
   const [showNewQuest, setShowNewQuest] = useState(false);
-  const [urlCleaned, setUrlCleaned] = useState(false);
+  const urlCleanedRef = useRef(false);
 
-  useEffect(() => {
-    // Check if the URL has the showHelp parameter
-    const showHelp = searchParams.get('showHelp');
-
+  // Open the help dialog when the showHelp param appears (render-time, on a
+  // showHelp change; compares the primitive value, not the searchParams object,
+  // so it converges even if useSearchParams returns a new reference).
+  const [prevShowHelp, setPrevShowHelp] = useState(showHelp);
+  if (showHelp !== prevShowHelp) {
+    setPrevShowHelp(showHelp);
     if (showHelp === 'true') {
       setShowDialog(true);
     }
-  }, [searchParams]);
+  }
 
-  // Clean up URL when dialog is displayed
+  // Clean up the URL once the dialog is shown (navigation side effect).
   useEffect(() => {
-    if (showDialog && !urlCleaned) {
-      const newUrl = window.location.pathname;
-      router.replace(newUrl);
-      setUrlCleaned(true);
+    if (showDialog && !urlCleanedRef.current) {
+      router.replace(window.location.pathname);
+      urlCleanedRef.current = true;
     }
-  }, [showDialog, urlCleaned, router]);
+  }, [showDialog, router]);
 
   const handleClose = () => {
     setShowDialog(false);

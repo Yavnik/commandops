@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { posthogCapture } from '@/lib/posthog-utils';
 
@@ -12,38 +12,49 @@ interface FocusTimerProps {
 export function FocusTimer({ timerType, duration }: FocusTimerProps) {
   const [isRunning, setIsRunning] = useState(true);
   const [timeElapsed, setTimeElapsed] = useState(0); // in seconds
-  const [timeRemaining, setTimeRemaining] = useState(0); // in seconds
+  const [timeRemaining, setTimeRemaining] = useState(() =>
+    timerType === 'pomodoro'
+      ? (duration || 25) * 60
+      : timerType === 'countdown' && duration
+        ? duration * 60
+        : 0
+  ); // in seconds
   const [pausedAt, setPausedAt] = useState<Date | null>(null);
   const [totalPausedTime, setTotalPausedTime] = useState(0); // in seconds
-  const [timerStartTime, setTimerStartTime] = useState<Date | null>(null);
-  const [sessionCompleted, setSessionCompleted] = useState(false);
+  const [timerStartTime, setTimerStartTime] = useState<Date | null>(
+    () => new Date()
+  );
+  // Guard flag (never rendered) so the completion effect fires analytics once.
+  const sessionCompletedRef = useRef(false);
 
-  // Reset timer when mode or duration changes
-  useEffect(() => {
-    const now = new Date();
-    setTimerStartTime(now);
+  // Reset the timer when the mode or duration changes (render-time, on the
+  // config change; initial values are seeded in useState above for mount).
+  const [prevConfig, setPrevConfig] = useState({ timerType, duration });
+  if (prevConfig.timerType !== timerType || prevConfig.duration !== duration) {
+    setPrevConfig({ timerType, duration });
+    setTimerStartTime(new Date());
     setTimeElapsed(0);
     setTotalPausedTime(0);
     setPausedAt(null);
     setIsRunning(true);
-    setSessionCompleted(false);
 
-    // Set initial time remaining
     if (timerType === 'pomodoro') {
-      const totalSeconds = (duration || 25) * 60;
-      setTimeRemaining(totalSeconds);
+      setTimeRemaining((duration || 25) * 60);
     } else if (timerType === 'countdown' && duration) {
-      const totalSeconds = duration * 60;
-      setTimeRemaining(totalSeconds);
+      setTimeRemaining(duration * 60);
     } else {
       setTimeRemaining(0);
     }
+  }
 
-    // Track focus session start
+  // Track focus session start (on mount and whenever the config changes).
+  // Also resets the completion guard for the new session.
+  useEffect(() => {
+    sessionCompletedRef.current = false;
     posthogCapture('focus_session_started', {
       timer_type: timerType,
       duration_minutes: duration,
-      session_start_time: now.toISOString(),
+      session_start_time: new Date().toISOString(),
     });
   }, [timerType, duration]);
 
@@ -78,26 +89,29 @@ export function FocusTimer({ timerType, duration }: FocusTimerProps) {
     return () => clearInterval(interval);
   }, [timerStartTime, timerType, duration, isRunning, totalPausedTime]);
 
-  // Handle pause/resume logic
-  useEffect(() => {
-    if (!isRunning && !pausedAt) {
+  // Handle pause/resume logic on the isRunning transition (render-time).
+  const [prevIsRunning, setPrevIsRunning] = useState(isRunning);
+  if (isRunning !== prevIsRunning) {
+    setPrevIsRunning(isRunning);
+    if (!isRunning) {
       setPausedAt(new Date());
-    } else if (isRunning && pausedAt) {
+    } else if (pausedAt) {
       const pauseDuration = Math.floor(
         (new Date().getTime() - pausedAt.getTime()) / 1000
       );
       setTotalPausedTime(prev => prev + pauseDuration);
       setPausedAt(null);
     }
-  }, [isRunning, pausedAt]);
+  }
 
-  // Track timer completion
+  // Track timer completion (analytics side effect; sessionCompletedRef guards
+  // against firing more than once).
   useEffect(() => {
     if (
       (timerType === 'pomodoro' || timerType === 'countdown') &&
       timeRemaining === 0 &&
       timeElapsed > 0 &&
-      !sessionCompleted
+      !sessionCompletedRef.current
     ) {
       posthogCapture('focus_session_completed', {
         timer_type: timerType,
@@ -106,9 +120,9 @@ export function FocusTimer({ timerType, duration }: FocusTimerProps) {
         total_paused_seconds: totalPausedTime,
         completion_time: new Date().toISOString(),
       });
-      setSessionCompleted(true);
+      sessionCompletedRef.current = true;
     }
-  }, [timeRemaining, timerType, duration, timeElapsed, totalPausedTime, sessionCompleted]);
+  }, [timeRemaining, timerType, duration, timeElapsed, totalPausedTime]);
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -155,7 +169,7 @@ export function FocusTimer({ timerType, duration }: FocusTimerProps) {
     setTimeElapsed(0);
     setTotalPausedTime(0);
     setPausedAt(null);
-    setSessionCompleted(false);
+    sessionCompletedRef.current = false;
 
     // Reset time remaining based on current timer type
     if (timerType === 'pomodoro') {

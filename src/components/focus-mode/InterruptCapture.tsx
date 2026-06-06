@@ -17,30 +17,41 @@ export function InterruptCapture({ isOpen, onClose }: InterruptCaptureProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { addQuest } = useCommandOpsStore();
 
-  useEffect(() => {
+  // Reset capture state when the modal opens (render-time, on the open
+  // transition) so the effect below only handles focus + the countdown timer.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) {
       setTitle('');
       setCountdown(15);
       setIsSubmitting(false);
-
-      // Focus input after a brief delay
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-
-      // Start countdown
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            onClose();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(timer);
     }
+  }
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Focus input after a brief delay
+    const focusTimeout = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+
+    // Start countdown
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          onClose();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(focusTimeout);
+      clearInterval(timer);
+    };
   }, [isOpen, onClose]);
 
   const handleSubmit = useCallback(async () => {

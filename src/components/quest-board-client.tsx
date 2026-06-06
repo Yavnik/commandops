@@ -74,7 +74,12 @@ function QuestBoardContent({ initialQuests }: QuestBoardClientProps) {
     [searchParams]
   );
 
-  // Sync URL parameters with state
+  // Sync URL parameters with state. This intentionally stays in an effect: it
+  // writes to the external Zustand store (setKanbanView) as well as local
+  // state, and doing that during render could update other store subscribers
+  // mid-render. react-hooks@7's set-state-in-effect is a false positive for
+  // this external-store synchronization.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const { filter, missionId } = urlParams;
@@ -100,6 +105,7 @@ function QuestBoardContent({ initialQuests }: QuestBoardClientProps) {
       });
     }
   }, [urlParams, setKanbanView]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Filter missions based on search term
   const filteredMissions = useMemo(() => {

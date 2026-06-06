@@ -74,15 +74,17 @@ function RadarViewContent({
         return noise;
       };
 
-      setNoisePattern(generateNoise());
-
-      // Animate noise (flicker effect)
+      // Animate noise (flicker effect). The first tick generates the pattern
+      // (client only, so it never runs during SSR/hydration); later ticks
+      // flicker the opacity. Avoids a synchronous setState in the effect body.
       const noiseInterval = setInterval(() => {
         setNoisePattern(prev =>
-          prev.map(dot => ({
-            ...dot,
-            opacity: Math.random() * 0.5 + 0.15, // More visible flickering
-          }))
+          prev.length === 0
+            ? generateNoise()
+            : prev.map(dot => ({
+                ...dot,
+                opacity: Math.random() * 0.5 + 0.15, // More visible flickering
+              }))
         );
       }, 150); // Faster flicker for more dynamic feel
 

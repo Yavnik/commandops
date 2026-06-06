@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { posthogCapture } from '@/lib/posthog-utils';
+import { useIsMounted } from '@/hooks/use-is-mounted';
 import {
   Select,
   SelectContent,
@@ -34,12 +34,8 @@ const themes = [
 ];
 
 export function ThemeSelector() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsMounted();
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Get current theme data
   const currentTheme = themes.find(t => t.value === theme) || themes[0];

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -68,8 +68,14 @@ export function NewQuestDialog({
     setBriefingError('');
   };
 
-  // Initialize form with edit data when in edit mode
-  useEffect(() => {
+  // Initialize the form when the dialog opens or the target quest changes
+  // (adjust state during render instead of in an effect).
+  const [prevInit, setPrevInit] = useState({
+    open,
+    editQuestId: editQuest?.id ?? null,
+  });
+  if (prevInit.open !== open || prevInit.editQuestId !== (editQuest?.id ?? null)) {
+    setPrevInit({ open, editQuestId: editQuest?.id ?? null });
     if (open) {
       if (isEditMode && editQuest) {
         setDesignation(editQuest.title);
@@ -81,7 +87,7 @@ export function NewQuestDialog({
         resetForm();
       }
     }
-  }, [open, isEditMode, editQuest]);
+  }
 
   const roundToNext15Minutes = (date: Date) => {
     const minutes = date.getMinutes();
@@ -115,15 +121,14 @@ export function NewQuestDialog({
     );
   };
 
-  // Set default deadline when modal opens (only for new quests)
-  useEffect(() => {
-    if (open && !deadline && !isEditMode) {
-      const now = new Date();
-      now.setHours(now.getHours() + 1);
-      const rounded = roundToNext15Minutes(now);
-      setDeadline(rounded);
-    }
-  }, [open, deadline, isEditMode]);
+  // Default the deadline to +1h (rounded) for new quests whenever it is unset
+  // while the dialog is open. Runs during render; converges once deadline is set
+  // and re-applies if the user clears it (matching the previous effect).
+  if (open && !deadline && !isEditMode) {
+    const now = new Date();
+    now.setHours(now.getHours() + 1);
+    setDeadline(roundToNext15Minutes(now));
+  }
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) {

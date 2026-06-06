@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCommandOpsStore } from '@/store/command-ops-store';
 import {
   Dialog,
@@ -39,13 +39,16 @@ export function EditMissionDialog({
   const [titleError, setTitleError] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
 
-  // Populate form when mission changes
-  useEffect(() => {
+  // Populate form when the mission changes (adjust state during render on the
+  // mission-identity change instead of in an effect).
+  const [prevMissionId, setPrevMissionId] = useState(mission?.id ?? null);
+  if ((mission?.id ?? null) !== prevMissionId) {
+    setPrevMissionId(mission?.id ?? null);
     if (mission) {
       setTitle(mission.title);
       setDescription(mission.objective || '');
     }
-  }, [mission]);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

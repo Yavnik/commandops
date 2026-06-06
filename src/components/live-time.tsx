@@ -1,9 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
 import { enUS } from 'date-fns/locale/en-US';
+import { useIsMounted } from '@/hooks/use-is-mounted';
+
+const emptySubscribe = () => () => {};
+
+// Resolved once on the client; 'UTC' during SSR/hydration to avoid mismatch.
+function getClientTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    console.warn('Unable to detect timezone, falling back to UTC');
+    return 'UTC';
+  }
+}
 
 interface LiveTimeProps {
   className?: string;
@@ -23,21 +36,14 @@ export function LiveTime({
   hideSeconds = false,
 }: LiveTimeProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [mounted, setMounted] = useState(false);
-  const [localTimezone, setLocalTimezone] = useState<string>('UTC');
+  const mounted = useIsMounted();
+  const localTimezone = useSyncExternalStore(
+    emptySubscribe,
+    getClientTimezone,
+    () => 'UTC'
+  );
 
   useEffect(() => {
-    setMounted(true);
-
-    // Get user's local timezone
-    try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      setLocalTimezone(timezone);
-    } catch {
-      console.warn('Unable to detect timezone, falling back to UTC');
-      setLocalTimezone('UTC');
-    }
-
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
