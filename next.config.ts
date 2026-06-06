@@ -31,16 +31,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache static assets with long expiry but allow revalidation
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
         // Don't cache HTML pages aggressively to prevent chunk mismatch
         source: '/((?!_next/static|favicon.ico).*)',
         headers: [

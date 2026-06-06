@@ -1,5 +1,5 @@
 # Use Bun with Alpine for smaller base image
-FROM oven/bun:1.2-alpine AS base
+FROM oven/bun:1.3-alpine AS base
 
 # Install dependencies for building
 FROM base AS deps
